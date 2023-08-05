@@ -1,3 +1,50 @@
+/* Setze die Schriftart auf Open Sans */
 body {
+    font-family: 'Open Sans', sans-serif;
     background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Stile für die Tabelle */
+table {
+    border-collapse: separate;
+    /* Setze die Trennlinien getrennt */
+    border-spacing: 5px;
+    /* Füge einen Abstand von 5px zwischen den Zellen hinzu */
+}
+
+/* Setze die Dicke und Farbe der inneren Trennlinien und mache sie rund */
+td {
+    border: 2px solid #000000;
+    /* Schwarze Farbe (#000000) für die Trennlinien */
+    border-radius: 10px;
+    /* Runde Ecken mit einem Radius von 10px */
+    width: 100px;
+    height: 100px;
+    text-align: center;
+    font-size: 40px;
+    background-color: transparent;
+    /* Setze die Hintergrundfarbe der Zellen auf transparent */
+    position: relative;
+}
+
+/* Füge dem td-Element ein Muster hinzu, wenn es leer ist */
+td:empty {
+    animation: pulse 3s linear infinite;
+    /* Verlängere die Animation auf 3 Sekunden */
+}
+
+/* Definiere die Pulsierende Animation für den Hintergrund */
+@keyframes pulse {
+    0% {
+        background-color: transparent;
+    }
+
+    50% {
+        background-color: rgba(255, 255, 255, 0.24);
+        /* Geringfügige Helligkeitsänderung - Halbtransparentes Weiß (#ffffff) als Hintergrund bei 50% der Animation */
+    }
+
+    100% {
+        background-color: transparent;
+    }
 }
