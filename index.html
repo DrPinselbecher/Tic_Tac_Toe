@@ -9,7 +9,49 @@
 </head>
 
 <body>
+    <svg width="150" height="150" xmlns="http://www.w3.org/2000/svg">
+        <path d="M28 30 L98 120"
+            style="stroke:#000; stroke-width:28; fill:none; stroke-linecap:round; stroke-linejoin:round;" />
+        <path d="M29 20 L99 118"
+            style="stroke:#000; stroke-width:28; fill:none; stroke-linecap:round; stroke-linejoin:round;" />
+        <path d="M28 102 L108 34"
+            style="stroke:#000; stroke-width:28; fill:none; stroke-linecap:round; stroke-linejoin:round;" />
+        <defs>
+            <linearGradient id="cross" gradientTransform="rotate(45)">
+                <stop offset="20%" stop-color="#9c00ff" />
+                <stop offset="100%" stop-color="#7300b5" />
+            </linearGradient>
+        </defs>
+        <path d="M20 20 L90 120"
+            style="stroke:url(#cross); stroke-width:30; fill:none; stroke-linecap:round; stroke-linejoin:round;" />
+        <path d="M20 100 L100 30"
+            style="stroke:url(#cross); stroke-width:30; fill:none; stroke-linecap:round; stroke-linejoin:round;" />
+    </svg>
 
+
+    <svg width="150" height="150" xmlns="http://www.w3.org/2000/svg">
+        <!-- Filter für den Schatten -->
+        <defs>
+            <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                <feOffset dx="8" dy="2" in="SourceAlpha" result="offset" />
+                <feGaussianBlur in="offset" stdDeviation="0" result="blur" />
+                <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+        </defs>
+
+        <!-- Dickeres X mit harmonischem Farbverlauf und abgerundeten Ecken -->
+        <defs>
+            <linearGradient id="circle" gradientTransform="rotate(45)">
+                <stop offset="20%" stop-color="#FF7F00" />
+                <stop offset="100%" stop-color="#ff5b1f" />
+            </linearGradient>
+        </defs>
+        <circle cx="75" cy="75" r="48"
+            style="stroke:url(#circle); stroke-width:30; fill:none; stroke-linecap:round; stroke-linejoin:round; filter:url(#shadow);" />
+    </svg>
     <script src="script.js"></script>
 </body>
 
