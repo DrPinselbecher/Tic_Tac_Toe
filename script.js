@@ -186,7 +186,7 @@ function showDraw() {
     disableSymbolsOpacity();
 
     drawTxt.innerHTML = `
-        <h2 class="drawTxt">Es ist ein Unentschieden!</h2>
+        <h2 id="draw" class="drawTxt">Es ist ein Unentschieden!</h2>
     `;
 
     enableRestartButton();

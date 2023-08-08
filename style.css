@@ -163,7 +163,7 @@ td:not(:empty) {
 
 .showResultBorder {
     height: 88px;
-    width: 96%;
+    min-width: 322px;
     padding: 10px 0 10px 0;
     border: 2px solid black;
     margin-bottom: -20px;
@@ -181,4 +181,102 @@ td:not(:empty) {
 
 .d-none {
     display: none;
+}
+
+.no-scroll {
+    overflow: hidden;
+}
+
+@media (max-width:340px) {
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .title-contain {
+        display: flex;
+        justify-content: center;
+        gap: 3vh;
+    }
+
+    .title {
+        max-width: 40vw;
+        min-width: 76vw;
+    }
+
+    .button {
+        width: 90%;
+        font-size: 16px;
+    }
+
+    table {
+        position: relative;
+        border-collapse: separate;
+        border-spacing: 5px;
+        width: 97%;
+    }
+
+    td {
+        border: 2px solid #000000;
+        border-radius: 10px;
+        width: 80px;
+        height: 75px;
+        text-align: center;
+        font-size: 40px;
+        background-color: transparent;
+        position: relative;
+    }
+
+    .symbol {
+        width: 60px;
+        height: 60px;
+        margin-bottom: -10px;
+    }
+
+    .winSymbol {
+        height: 60px;
+        width: auto;
+    }
+
+    .symbolsWin {
+        text-align: center;
+        margin-top: -10px;
+        height: 72px !important;
+        padding-bottom: 22px !important;
+    }
+
+    .showResultBorder {
+        height: 60px !important;
+        width: 90%;
+        min-width: 1px;
+        max-width: 90%;
+        padding: 6px 0 6px 0;
+        border: 2px solid black;
+        margin-bottom: -24px;
+        margin-top: -16px;
+        border-radius: 10px;
+    }
+
+    h2 {
+        font-size: 20px;
+    }
+
+    #restartGame {
+        margin-top: -10px;
+    }
+
+    #draw {
+        font-size: 18px !important;
+    }
+
+    #showDraw {
+        padding-top: 13px;
+        padding-bottom: 13px;
+    }
+
+    .d-none {
+        display: none;
+    }
 }
