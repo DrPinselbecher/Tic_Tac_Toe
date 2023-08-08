@@ -9,7 +9,75 @@
 </head>
 
 <body onload="init()">
-    <div id="content"></div>
+    <div class="title-contain">
+        <div class="title">
+            <svg class="title" viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+                <!-- Hintergrundverlauf (Lila zu Orange) -->
+                <linearGradient id="gradient" gradientTransform="rotate(45)">
+                    <stop offset="0%" stop-color="#8A2BE2" />
+                    <stop offset="50%" stop-color="#FFA500" />
+                    <stop offset="100%" stop-color="#8A2BE2" />
+                </linearGradient>
+
+                <!-- Text "Tic Tac Toe" mit gestreiftem Verlauf -->
+                <text x="0" y="40" font-size="40" fill="url(#gradient)">
+                    Tic Tac Toe
+                </text>
+            </svg>
+        </div>
+        <button class="button" id="computer-button" onclick="playWithComputer()">Spielen Sie gegen den
+            <span class="highlighted">Computer</span></button>
+        <button class="button" id="player-button" style="display: none;" onclick="playWithPlayer()">Spielen Sie gegen
+            einen <span class="highlighted">Spieler</span></button>
+        <div id="symbolsContainer" class="symbols">
+            <div class="symbol cross">
+                <svg id="showCross" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 150">
+                    <defs>
+                        <filter id="shadowCircle" x="-50%" y="-50%" width="200%" height="200%">
+                            <feOffset dx="8" dy="2" in="SourceAlpha" result="offset" />
+                            <feGaussianBlur in="offset" stdDeviation="0" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                        <linearGradient id="gradientCircle" gradientTransform="rotate(45)">
+                            <stop offset="20%" stop-color="#FF7F00" />
+                            <stop offset="100%" stop-color="#ff5b1f" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="75" cy="75" r="48" id="circlePathNew"
+                        style="stroke:url(#gradientCircle); stroke-width:30; fill:none; stroke-linecap:round; stroke-linejoin:round; filter:url(#shadowCircle);" />
+                </svg>
+            </div>
+            <div class="symbol circle">
+                <svg id="showCircle" viewBox="0 0 128 128">
+                    <defs>
+                        <linearGradient id="gradientCross" gradientTransform="rotate(45)">
+                            <stop offset="20%" stop-color="#9c00ff" />
+                            <stop offset="100%" stop-color="#7300b5" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Schwarze Linien -->
+                    <path d="M28 30 L98 120"
+                        style="stroke:#000; stroke-width:15; fill:none; stroke-linecap:round; stroke-linejoin:round; opacity: 1;" />
+                    <path d="M29 20 L99 118"
+                        style="stroke:#000; stroke-width:15; fill:none; stroke-linecap:round; stroke-linejoin:round; opacity: 1;" />
+                    <path d="M28 102 L108 34"
+                        style="stroke:#000; stroke-width:15; fill:none; stroke-linecap:round; stroke-linejoin:round; opacity: 1;" />
+                    <!-- Lila Linien -->
+                    <path id="line4New" d="M20 20 L90 120"
+                        style="stroke:url(#gradientCross); stroke-width:20; fill:none; stroke-linecap:round; stroke-linejoin:round;" />
+                    <path id="line5New" d="M20 100 L100 30"
+                        style="stroke:url(#gradientCross); stroke-width:20; fill:none; stroke-linecap:round; stroke-linejoin:round;" />
+                </svg>
+            </div>
+        </div>
+        <div id="showWinner" class="d-none symbolsWin showResultBorder"></div>
+        <div id="showDraw" class="d-none drawContain showResultBorder"></div>
+        <div id="contentTTT"></div>
+        <button class="button disabled-button" id="restartGame" onclick="resetGame()" disabled>Erneut Spielen</button>
+    </div>
     <script src="script.js"></script>
 </body>
 
