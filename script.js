@@ -19,29 +19,31 @@ function init() {
 }
 
 function render() {
-    const contentDiv = document.getElementById('contentTTT');
-
-    let tableHTML = '<table id="table">';
-    for (let i = 0; i < 3; i++) {
-        tableHTML += '<tr>';
-        for (let j = 0; j < 3; j++) {
-            const index = i * 3 + j;
-            if (fields[index] === 'circle') {
-                tableHTML += generateCircle();
-            } else if (fields[index] === 'cross') {
-                tableHTML += generateCross();
-            } else {
-                tableHTML += `<td onclick="fillField(${index})"></td>`;
-            }
-        }
-        tableHTML += '</tr>';
-    }
-    tableHTML += '</table>';
-
-    contentDiv.innerHTML = tableHTML;
+    generateTableHTML();
     enableSymbolsOpacity();
     checkWinner();
 }
+
+function generateTableHTML() {
+    let tableHTML = '<table id="table">'; // Beginnt die HTML-Tabelle mit einer öffnenden <table>-Tag
+    for (let i = 0; i < 3; i++) { // Äußere Schleife, die für jede Zeile in einer 3x3-Tabelle läuft
+        tableHTML += '<tr>'; // Fügt eine öffnende <tr>-Tag für eine neue Zeile hinzu
+        for (let j = 0; j < 3; j++) { // Innere Schleife, die für jede Zelle in der aktuellen Zeile läuft
+            const index = i * 3 + j; // Berechnet den Index im 1D-Array "fields" basierend auf der aktuellen Zeile und Spalte
+            if (fields[index] === 'circle') { // Wenn die Zelle einen Kreis enthält
+                tableHTML += generateCircle(); // Fügt das HTML für den Kreis hinzu
+            } else if (fields[index] === 'cross') { // Wenn die Zelle ein Kreuz enthält
+                tableHTML += generateCross(); // Fügt das HTML für das Kreuz hinzu
+            } else { // Wenn die Zelle leer ist
+                tableHTML += `<td onclick="fillField(${index})"></td>`; // Fügt eine leere Zelle mit einem onclick-Handler hinzu
+            }
+        }
+        tableHTML += '</tr>'; // Schließt die aktuelle Zeile mit einem schließenden <tr>-Tag
+    }
+    tableHTML += '</table>'; // Schließt die Tabelle mit einem schließenden <table>-Tag
+    document.getElementById('contentTTT').innerHTML = tableHTML; // Setzt den HTML-Inhalt des Elements mit der ID 'contentTTT' auf die generierte Tabelle
+}
+
 
 function updateSymbolVisibility(currentPlayer) {
     const crossElement = document.getElementById('showCross');
@@ -57,76 +59,64 @@ function updateSymbolVisibility(currentPlayer) {
 }
 
 function fillField(index, symbolToSet) {
-    if (!fields[index]) {
-        const symbol = symbolToSet || currentPlayer;
-        fields[index] = symbol;
-        const tdElement = document.getElementsByTagName('td')[index];
-        tdElement.innerHTML = symbol === 'circle' ? generateCircle() : generateCross();
-        tdElement.onclick = null;
-
-
-        // Wenn ein Gewinner gefunden wird, bricht die Funktion ab
-        if (checkWinner()) return;
-
-        // Wenn der Computer als nächstes spielen soll und es ein menschlicher Zug war (symbolToSet ist undefiniert)
-        if (computerPlayerActive && !symbolToSet) {
-            makeComputerMove();
-        } else {
-            // currentPlayer wechseln nur, wenn es nicht der Computerzug ist
-            currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
-            updateSymbolVisibility(currentPlayer);
+    if (!fields[index]) { // Überprüft, ob das Feld am gegebenen Index bereits gefüllt ist
+        const symbol = symbolToSet || currentPlayer; // Setzt das Symbol entweder auf das übergebene Symbol oder das des aktuellen Spielers
+        fields[index] = symbol; // Füllt das Feld im Array mit dem ausgewählten Symbol
+        const tdElement = document.getElementsByTagName('td')[index]; // Holt das HTML-Element für das Feld am gegebenen Index
+        tdElement.innerHTML = symbol === 'circle' ? generateCircle() : generateCross(); // Setzt den inneren HTML-Inhalt des Elements entweder auf einen Kreis oder ein Kreuz, je nachdem, welches Symbol ausgewählt ist
+        tdElement.onclick = null; // Entfernt den onClick-Handler, um weitere Klicks auf dieses Feld zu verhindern
+        if (checkWinner()) return; // Überprüft, ob ein Gewinner gefunden wurde, und bricht die Funktion ab, wenn dies der Fall ist
+        if (computerPlayerActive && !symbolToSet) { // Wenn der Computer der nächste Spieler ist und es ein menschlicher Zug war
+            makeComputerMove(); // Lässt den Computer einen Zug machen
+        } else { // Wenn es ein menschlicher Zug ist oder der Computer nicht der nächste Spieler ist
+            switchPlayer(); // Wechselt den aktuellen Spieler
+            updateSymbolVisibility(currentPlayer); // Aktualisiert die Symbol-Sichtbarkeit für den aktuellen Spieler
         }
     }
 }
 
+
 function makeComputerMove() {
+    // Reduziere das Spielfeld auf einen Array von verfügbaren Indizes (Zellen, die nicht belegt sind)
     const availableIndexes = fields.reduce((acc, field, idx) => {
-        if (!field) {
-            acc.push(idx);
+        if (!field) { // Wenn das Feld nicht belegt ist
+            acc.push(idx); // Füge den Index zum Array der verfügbaren Indizes hinzu
         }
-        return acc;
+        return acc; // Gebe den akkumulierten Wert zurück
     }, []);
-
-    if (availableIndexes.length === 0) return;
-
-    const computerSymbol = currentPlayer === 'circle' ? 'cross' : 'circle';
-    const humanSymbol = currentPlayer;
-
+    if (availableIndexes.length === 0) return; // Wenn keine Züge mehr verfügbar sind, beende die Funktion
+    const computerSymbol = currentPlayer === 'circle' ? 'cross' : 'circle'; // Bestimme das Symbol des Computers
+    const humanSymbol = currentPlayer; // Speichere das Symbol des menschlichen Spielers
     // Versuche, den Gewinnzug für den Computer zu finden
     let winningMove = findBestMove(availableIndexes, computerSymbol);
-
     // Wenn kein Gewinnzug für den Computer gefunden wurde, prüfe, ob der menschliche Spieler im nächsten Zug gewinnen könnte und blockiere ihn
     if (winningMove === null) {
         winningMove = findBestMove(availableIndexes, humanSymbol);
     }
-
     // Wenn weder ein Gewinnzug für den Computer noch ein Blockzug gefunden wurde, wähle einen zufälligen Zug
     const moveIndex = winningMove !== null ? winningMove : availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
-
-    fillField(moveIndex, computerSymbol);
-    currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
-    updateSymbolVisibility(currentPlayer);
+    fillField(moveIndex, computerSymbol); // Fülle das gewählte Feld mit dem Symbol des Computers
+    switchPlayer(); // Wechsle den aktuellen Spieler
+    updateSymbolVisibility(currentPlayer); // Aktualisiere die Symbol-Sichtbarkeit entsprechend dem neuen Spieler
 }
+
 
 function findBestMove(availableIndexes, symbol) {
-    for (let index of availableIndexes) {
-        let testFields = [...fields];
-        testFields[index] = symbol;
-        if (isWinningMove(testFields)) {
-            return index;
+    for (let index of availableIndexes) { // Durchlaufe jeden verfügbaren Index im übergebenen Array "availableIndexes"
+        let testFields = [...fields]; // Erstelle eine Kopie des aktuellen Spielfelds, um einen Testzug durchzuführen
+        testFields[index] = symbol;    // Füge das Symbol (entweder 'circle' oder 'cross') an der derzeit untersuchten Position im Testspielfeld ein
+        if (isWinningMove(testFields)) { // Prüfe, ob das Einfügen des Symbols an dieser Position zu einem Gewinn führt
+            return index;              // Wenn es ein Gewinnzug ist, gib den Index dieses Zugs zurück
         }
     }
-    return null;
+    return null; // Wenn kein Gewinnzug gefunden wird, gib null zurück
 }
 
-function isWinningMove(testFields) {
-    const winningCombinations = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],
-        [0, 4, 8], [2, 4, 6],
-    ];
 
-    for (const combination of winningCombinations) {
+
+function isWinningMove(testFields) {
+
+    for (const combination of winningCombinations()) {
         const [a, b, c] = combination;
         if (testFields[a] && testFields[a] === testFields[b] && testFields[a] === testFields[c]) {
             return true;
@@ -136,9 +126,7 @@ function isWinningMove(testFields) {
     return false;
 }
 
-
-
-function checkWinner() {
+function winningCombinations() {
     const winningCombinations = [
         [0, 1, 2],
         [3, 4, 5],
@@ -150,8 +138,13 @@ function checkWinner() {
         [2, 4, 6],
     ];
 
+    return winningCombinations;
+}
+
+function checkWinner() {
+
     let winnerFound = false;
-    for (const combination of winningCombinations) {
+    for (const combination of winningCombinations()) {
         const [a, b, c] = combination;
         if (fields[a] && fields[a] === fields[b] && fields[a] === fields[c]) {
             // We have a winner
@@ -159,15 +152,13 @@ function checkWinner() {
             removeOnClickAttributes();
             drawWinningLine(combination);
             disableSymbolsOpacity();
-            showWinner(fields[a]); // Übergeben des Gewinnersymbols
+            showWinner(fields[a]);
             return true;
         }
     }
 
-    // Aktualisiere die Symbole nur, wenn kein Gewinner gefunden wurde
     if (!winnerFound) {
         if (checkDraw()) {
-            // Code, um das Unentschieden anzuzeigen oder zu handhaben
             showDraw();
         } else {
             updateSymbolVisibility(currentPlayer);
@@ -234,19 +225,19 @@ function removeOnClickAttributes() {
 }
 
 function drawWinningLine(combination) {
-    const [a, b, c] = combination;
-    const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svgElement.setAttribute('viewBox', '0 0 300 300'); // Adjusted viewBox
-    svgElement.setAttribute('class', 'winnerLine');
+    const [a, b, c] = combination; // Destructuring der "combination", um die ersten, zweiten und dritten Indizes zu erhalten
+    const svgElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); // Erstellen eines neuen SVG-Elements
+    svgElement.setAttribute('viewBox', '0 0 300 300'); // Festlegen des viewBox-Attributs des SVG, um den sichtbaren Bereich zu definieren
+    svgElement.setAttribute('class', 'winnerLine'); // Festlegen der CSS-Klasse für das SVG-Element
 
-    const lineElement = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    lineElement.setAttribute('x1', getCoordinateX(a));
-    lineElement.setAttribute('y1', getCoordinateY(a));
-    lineElement.setAttribute('x2', getCoordinateX(c));
-    lineElement.setAttribute('y2', getCoordinateY(c));
-    svgElement.appendChild(lineElement);
+    const lineElement = document.createElementNS('http://www.w3.org/2000/svg', 'line'); // Erstellen eines neuen Linien-Elements innerhalb des SVG
+    lineElement.setAttribute('x1', getCoordinateX(a)); // Festlegen des x1-Attributs für den Startpunkt der Linie basierend auf Index a
+    lineElement.setAttribute('y1', getCoordinateY(a)); // Festlegen des y1-Attributs für den Startpunkt der Linie basierend auf Index a
+    lineElement.setAttribute('x2', getCoordinateX(c)); // Festlegen des x2-Attributs für den Endpunkt der Linie basierend auf Index c
+    lineElement.setAttribute('y2', getCoordinateY(c)); // Festlegen des y2-Attributs für den Endpunkt der Linie basierend auf Index c
+    svgElement.appendChild(lineElement); // Hinzufügen des Linien-Elements zum SVG-Element
 
-    document.getElementById('table').appendChild(svgElement);
+    document.getElementById('table').appendChild(svgElement); // Anhängen des SVG-Elements an das Element mit der ID 'table'
 }
 
 function getCoordinateX(index) {
@@ -260,7 +251,7 @@ function getCoordinateY(index) {
 function generateCircle() {
     const svgHTML = /*html*/`
         <td style="position: relative;">
-            <svg id="circleInTD" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+            <svg class="circleInTD" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
                 <defs>
                     <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
                         <feOffset dx="3" dy="3" in="SourceAlpha" result="offset" />
@@ -278,9 +269,7 @@ function generateCircle() {
                     </linearGradient>
                 </defs>
                 <circle cx="100" cy="100" r="60" id="circlePath"
-                    style="stroke:url(#circle); stroke-width:30; fill:none; stroke-linecap:round; stroke-linejoin:round; filter:url(#shadow);">
-                    <!-- Animation für das Zeichnen des Kreises (einmalige Ausführung, 0.6 Sekunden Dauer) -->
-                    <animate attributeName="stroke-dasharray" dur="0.6s" keyTimes="0; 1" values="0 377; 377 0" fill="freeze" />
+                    style="stroke:url(#circle); stroke-width:30; fill:none; stroke-linecap:round; stroke-linejoin:round; filter:url(#shadow);">                    <animate attributeName="stroke-dasharray" dur="0.6s" keyTimes="0; 1" values="0 377; 377 0" fill="freeze" />
                 </circle>
             </svg>
         </td>
@@ -294,7 +283,7 @@ function generateCircle() {
 function generateCross() {
     const svgHTML = /*html*/`
         <td style="position: relative;">
-            <svg id="crossInTD" style="width: 100%; height: 100%;" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
+            <svg class="crossInTD" style="width: 100%; height: 100%;" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid meet">
                 <defs>
                     <linearGradient id="cross" gradientTransform="rotate(45)">
                         <stop offset="20%" stop-color="#9c00ff" />
@@ -355,28 +344,32 @@ function disableRestartButton() {
 }
 
 function resetGame() {
-    let crossElements = document.querySelectorAll('#crossInTD');
-    let circleElements = document.querySelectorAll('#circleInTD');
-    let winSymbol = document.getElementById('showWinner');
-    let drawTxt = document.getElementById('showDraw');
-
-    drawTxt.classList.add('d-none');
-    winSymbol.classList.add('d-none');
-    crossElements.forEach((element) => element.remove());
-    circleElements.forEach((element) => element.remove());
-
-    // Array zurücksetzen
-    fields = new Array(9).fill(null);
-
-    // Zellen zurücksetzen und wieder anklickbar machen
-    const cells = document.querySelectorAll('td');
-    cells.forEach((cell, index) => {
-        cell.innerHTML = ''; // Inhalte der Zelle löschen
-        cell.onclick = () => fillField(index); // Event Listener wieder hinzufügen
-    });
-
+    removeElements();
+    setArrayToNull();
+    resetAllCells();
     disableRestartButton();
-    updateSymbolVisibility(currentPlayer);
+    switchPlayer();
     render();
 }
 
+function resetAllCells() {
+    document.querySelectorAll('td').forEach((cell, index) => {
+        cell.innerHTML = ''; // Inhalte der Zelle löschen
+        cell.onclick = () => fillField(index); // Event Listener wieder hinzufügen
+    });
+}
+
+function removeElements() {
+    document.querySelectorAll('.crossInTD').forEach((element) => element.remove()); // Klassen statt IDs verwenden
+    document.querySelectorAll('.circleInTD').forEach((element) => element.remove()); // Klassen statt IDs verwenden
+    document.getElementById('showWinner').classList.add('d-none');
+    document.getElementById('showDraw').classList.add('d-none');
+}
+
+function setArrayToNull() {
+    fields = new Array(9).fill(null); // Direkte Zuweisung zum "fields"-Array
+}
+
+function switchPlayer() {
+    currentPlayer = currentPlayer === 'circle' ? 'cross' : 'circle';
+}
