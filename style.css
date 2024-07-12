@@ -207,7 +207,7 @@ td:not(:empty) {
 }
 
 @media (orientation: landscape) {
-    @media (max-width: 800px) {
+    @media (max-width: 1000px) and (min-height:200px) {
         .landscape-message-contain {
             display: flex;
         }
